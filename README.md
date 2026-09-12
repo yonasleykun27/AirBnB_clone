@@ -1,138 +1,96 @@
-# 0x00. AirBnB Clone - The Console 
+### AirBnB Clone 
 
-## Project Description
-The **AirBnB Clone** is a foundational full-stack software development project designed to replicate the core backend functionalities of the AirBnB web application.
+## Description of the project
+The ALX-Holberton B&B sums up the implementation of my four months of studies at the ALX-Holberton School - the fullstack software engineering program.
+The goal of the project is to deploy a replica of the [Airbnb Website](https://www.airbnb.com/) using my server. The final version of this project will have:
+- A command interpreter to manipulate data without a visual interface, like a shell (for development and debugging)
+- A website (front-end) with static and dynamic functionalities
+- A comprehensive database to manage the backend functionalities
+- An API that provides a communication interface between the front and backend of the system.
 
-This repository marks the first phase (**The Console**), where an object-oriented hierarchy is established alongside a custom command-line interface (CLI) to manage data persistence using JSON serialization and deserialization.
+### General concepts in review
+As you navigate this code base, it is great to note the following concepts, while completing this project.
+- How to create a Python package
+- How to create a command interpreter in Python using the cmd module
+- What is Unit testing and how to implement it in a large project
+- How to serialize and deserialize a Class
+- How to write and read a JSON file
+- How to manage datetime
+- What is an UUID
+- What is *args and how to use it
+- What is **kwargs and how to use it
+- How to handle named arguments in a function
 
-### Core Objectives
-- Create an Object-Oriented Data Model hierarchy with common attributes and behavior (`BaseModel`).
-- Manage serialization and deserialization flows (`BaseModel` -> dictionary -> JSON string -> file -> JSON string -> dictionary -> `BaseModel`).
-- Implement an extensible storage engine (`FileStorage`).
-- Build unit test suites for all classes, methods, and functions.
-- Ensure strict adherence to PEP8 / `pycodestyle`.
+### Files and Directories
+- ```models``` directory will contain all classes used for the entire project. A class, called “model” in a OOP project is the representation of an object/instance.
+- ```tests``` directory will contain all unit tests.
+- ```console.py``` file is the entry point of our command interpreter.
+- ```models/base_model.py``` file is the base class of all our models. It contains common elements:
+    - attributes: ```id```, ```created_at``` and ```updated_at```
+    - methods: ```save()``` and ```to_json()```
+- ```models/engine``` directory will contain all storage classes (using the same prototype). For the moment I will have only one: ```file_storage.py```.
 
----
+The project's implementation will happen in the following phases:
+## Phase One
+The first phase is to manipulate a powerful storage system to give an abstraction between objects and how they are stored and persisted. To achieve this, I will:
+- put in place a parent class (called ```BaseModel```) to take care of the initialization, serialization and deserialization of my future instances
+- create a simple flow of serialization/deserialization: Instance <-> Dictionary <-> JSON string <-> file
+- create all classes used for AirBnB (```User, State, City, Place…```) that inherit from ```BaseModel```
+- create the first abstracted storage engine of the project: File storage.
+- create all unittests to validate all our classes and storage engine
+- Create a data model
+- Manage (create, update, destroy, etc) objects via a console/command interpreter
+- Store and persist objects to files (JSON files)
+S
+## Description of the command interpreter
+| Commands  | Description |
+| ------------- | ------------- |
+| ```quit```  | Quits the console  |
+| ```Ctrl+D```  | Quits the console  |
+| ```help``` or ```help <command>```  | Displays all commands or Displays instructions for a specific command
+| ```create <class>```  | Creates an object of type , saves it to a JSON file, and prints the objects ID
+| ```show <class> <ID>```  | Shows string representation of an object
+| ```destroy <class> <ID>```  | Deletes an objects
+| ```all or all <class>```  | Prints all string representations of all objects or Prints all string representations of all objects of a specific class
+| ```update <class> <id> <attribute name> "<attribute value>"```  | Updates an object with a certain attribute (new or existing)
+| ```<class>.all()```  | Same as all ```<class>```
+| ```<class>.count()```  | Retrieves the number of objects of a certain class
+| ```<class>.show(<ID>)```  | Same as show ```<class> <ID>```
+| ```<class>.destroy(<ID>)```  | Same as destroy ```<class> <ID>```
+| ```<class>.update(<ID>, <attribute name>, <attribute value>```  | Same as update ```<class> <ID> <attribute name> <attribute value>```
+| ```<class>.update(<ID>, <dictionary representation>)```  | Updates an objects based on a dictionary representation of attribute names and values
 
-## Storage Architecture & Serialization Flow
-
-The data lifecycle follows a structured pipeline:
+## General Execution
+Your shell should work like this in interactive mode:
 ```
-[BaseModel Instance]
-        |
-        v  (to_dict)
-[Python Dictionary Representation]
-        |
-        v  (json.dump / json.dumps)
-[JSON String / file.json]
-        |
-        v  (json.load / json.loads)
-[Python Dictionary Representation]
-        |
-        v  (**kwargs reconstruction)
-[BaseModel Instance]
-```
-
-- **`models/base_model.py`**: Defines the base class from which all future entities inherit. It manages unique identifier generation via `uuid.uuid4()`, tracking creation and modification timestamps (`datetime`), string representation, and dictionary formatting.
-- **`models/engine/file_storage.py`**: Handles persistent storage by reading from and writing to `file.json`.
-- **`models/__init__.py`**: Instantiates a shared `FileStorage` object (`storage`) and reloads persisted state upon initialization.
-
----
-
-## The Command Interpreter
-
-The command interpreter is a shell-like command-line interface built using Python's `cmd` module to manage backend objects without a graphical user interface.
-
-### How to Start It
-
-#### Interactive Mode
-To run the console interactively, invoke `console.py` directly:
-```bash
 $ ./console.py
-(hbnb) 
-```
+(hbnb) help
 
-#### Non-Interactive Mode
-The interpreter can also execute commands piped via standard input:
-```bash
-$ echo "help" | ./console.py
-(hbnb) 
 Documented commands (type help <topic>):
 ========================================
 EOF  help  quit
-
 (hbnb) 
-```
-
-### Available Commands & Usage
-- **`help`**: Displays available commands or documentation for a specific command.
-- **`quit`** or **`EOF`**: Exits the command interpreter cleanly.
-- **`create <class_name>`**: Creates a new instance of `<class_name>`, saves it to the JSON file, and prints its unique `id`.
-- **`show <class_name> <id>`**: Prints the string representation of an instance based on the class name and id.
-- **`destroy <class_name> <id>`**: Deletes an instance based on the class name and id, and persists changes.
-- **`all`** or **`all <class_name>`**: Prints string representations of all instances or all instances of a specified class.
-- **`update <class_name> <id> <attribute_name> "<attribute_value>"`**: Updates an instance attribute and saves the change.
-
-### Example Console Session
-```bash
-$ ./console.py
-(hbnb) create BaseModel
-49faff9a-6318-451f-87b6-910505c55907
-(hbnb) show BaseModel 49faff9a-6318-451f-87b6-910505c55907
-[BaseModel] (49faff9a-6318-451f-87b6-910505c55907) {'id': '49faff9a-6318-451f-87b6-910505c55907', 'created_at': datetime.datetime(2026, 9, 11, 23, 10, 20, 123456), 'updated_at': datetime.datetime(2026, 9, 11, 23, 10, 20, 123456)}
+(hbnb) 
 (hbnb) quit
 $
-```
+But also in non-interactive mode: (like the Shell project in C)
 
----
+$ echo "help" | ./console.py
+(hbnb)
 
-## File Structure
+Documented commands (type help <topic>):
+========================================
+EOF  help  quit
+(hbnb) 
+$
+$ cat test_help
+help
+$
+$ cat test_help | ./console.py
+(hbnb)
 
-```
-AirBnB_clone/
-├── AUTHORS
-├── README.md
-├── models/
-│   ├── __init__.py
-│   ├── base_model.py
-│   └── engine/
-│       ├── __init__.py
-│       └── file_storage.py
-└── tests/
-    ├── __init__.py
-    └── test_models/
-        ├── __init__.py
-        ├── test_base_model.py
-        └── test_engine/
-            ├── __init__.py
-            └── test_file_storage.py
-```
+Documented commands (type help <topic>):
+========================================
+EOF  help  quit
+(hbnb)
 
----
-
-## Testing & Quality Assurance
-
-All code strictly conforms to the `pycodestyle` (PEP8) standard and includes exhaustive unit tests.
-
-### Running Pycodestyle Checks
-```bash
-python3 -m pycodestyle models/ tests/
-```
-
-### Running Unit Tests
-Unit tests can be executed interactively or non-interactively using Python's `unittest` framework:
-
-**Interactive mode:**
-```bash
-python3 -m unittest discover tests
-```
-
-**Non-interactive mode:**
-```bash
-echo "python3 -m unittest discover tests" | bash
-```
-
----
-
-## Authors
-- **Yonas Leykun** - [yonasleykun27](https://github.com/yonasleykun27) - <yonasleykun27@gmail.com>

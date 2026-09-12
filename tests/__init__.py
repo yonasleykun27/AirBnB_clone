@@ -1,2 +1,2 @@
 #!/usr/bin/python3
-"""Package initializer for unit test suites."""
+"""Package module for AirBnB clone project unit tests."""

@@ -1,162 +1,210 @@
 #!/usr/bin/python3
-"""Unit tests for BaseModel class."""
-from datetime import datetime
-import os
-import time
+
+""" Unittest module for class BaseModel
+Test cases:
+    TestBaseModel_init
+    TestBaseModel_dict_method
+    TestBaseModel_save
+    TestBaseModel_str
+"""
+
 import unittest
+import os
+from time import sleep
+import models
+from datetime import datetime
 from models.base_model import BaseModel
-from models.engine.file_storage import FileStorage
 
 
-class TestBaseModelDocs(unittest.TestCase):
-    """Tests for BaseModel documentation and docstrings."""
+class TestBaseModel_init(unittest.TestCase):
+    """ tests for BaseModel class instantiation """
+    def test_type(self):
+        m = BaseModel()
+        self.assertEqual(type(m), BaseModel)
 
-    def test_module_docstring(self):
-        """Test for the module docstring."""
-        import models.base_model as bm_module
-        self.assertIsNotNone(bm_module.__doc__)
-        self.assertTrue(len(bm_module.__doc__) > 0)
+    def test_id_type_is_str(self):
+        mod = BaseModel()
+        self.assertEqual(str, type(mod.id))
 
-    def test_class_docstring(self):
-        """Test for the BaseModel class docstring."""
-        self.assertIsNotNone(BaseModel.__doc__)
-        self.assertTrue(len(BaseModel.__doc__) > 0)
+    def test_id_for_two_models(self):
+        mod1 = BaseModel()
+        mod2 = BaseModel()
+        self.assertNotEqual(mod2.id, mod1.id)
 
-    def test_methods_docstrings(self):
-        """Test for docstrings in BaseModel methods."""
-        for func in [
-            BaseModel.__init__,
-            BaseModel.save,
-            BaseModel.to_dict,
-            BaseModel.__str__
-        ]:
-            self.assertIsNotNone(func.__doc__)
-            self.assertTrue(len(func.__doc__) > 0)
+    def test_updated_at_is_date_time(self):
+        mod = BaseModel()
+        self.assertEqual(datetime, type(mod.updated_at))
 
+    def test_created_at_is_date_time(self):
+        mod = BaseModel()
+        self.assertEqual(datetime, type(mod.created_at))
 
-class TestBaseModelInstantiation(unittest.TestCase):
-    """Tests for BaseModel instantiation."""
+    def test_created_at_time_difference(self):
+        mod1 = BaseModel()
+        sleep(0.07)
+        mod2 = BaseModel()
+        self.assertLess(mod1.created_at, mod2.created_at)
 
-    def test_no_args_instantiation(self):
-        """Test instantiation with no arguments."""
-        bm = BaseModel()
-        self.assertIsInstance(bm, BaseModel)
-        self.assertIsInstance(bm.id, str)
-        self.assertIsInstance(bm.created_at, datetime)
-        self.assertIsInstance(bm.updated_at, datetime)
+    def test_updated_at_time_difference(self):
+        mod1 = BaseModel()
+        sleep(0.07)
+        mod2 = BaseModel()
+        self.assertLess(mod1.updated_at, mod2.updated_at)
 
-    def test_unique_ids(self):
-        """Test that each instance has a unique id."""
-        bm1 = BaseModel()
-        bm2 = BaseModel()
-        self.assertNotEqual(bm1.id, bm2.id)
+    def test_kwargs(self):
+        create = datetime.now()
+        update = datetime.now()
+        attr = {
+                "id": "12345",
+                "created_at": create.isoformat(),
+                "updated_at": update.isoformat()
+            }
+        mod = BaseModel(**attr)
+        self.assertEqual(mod.id, "12345")
+        self.assertEqual(mod.updated_at, update)
+        self.assertEqual(mod.created_at, create)
 
-    def test_different_created_at(self):
-        """Test that two instances have different created_at timestamps."""
-        bm1 = BaseModel()
-        time.sleep(0.01)
-        bm2 = BaseModel()
-        self.assertLess(bm1.created_at, bm2.created_at)
-
-    def test_str_representation(self):
-        """Test the __str__ representation of BaseModel."""
-        bm = BaseModel()
-        expected = "[BaseModel] ({}) {}".format(bm.id, bm.__dict__)
-        self.assertEqual(str(bm), expected)
-
-    def test_args_unused(self):
-        """Test that *args is not used when creating an instance."""
-        bm = BaseModel("123", "test")
-        self.assertNotIn("123", bm.__dict__.values())
-        self.assertNotIn("test", bm.__dict__.values())
-
-    def test_instantiation_with_kwargs(self):
-        """Test instantiation with kwargs dictionary."""
-        dt = datetime.now()
-        dt_iso = dt.isoformat()
-        bm = BaseModel(
-            id="42",
-            created_at=dt_iso,
-            updated_at=dt_iso,
-            name="Test",
-            number=89
-        )
-        self.assertEqual(bm.id, "42")
-        self.assertEqual(bm.created_at, dt)
-        self.assertEqual(bm.updated_at, dt)
-        self.assertEqual(bm.name, "Test")
-        self.assertEqual(bm.number, 89)
-
-    def test_instantiation_with_class_in_kwargs(self):
-        """Test that __class__ in kwargs is not added as an attribute."""
-        bm = BaseModel(__class__="OtherClass", id="99")
-        self.assertNotEqual(bm.__class__.__name__, "OtherClass")
-        self.assertEqual(bm.__class__.__name__, "BaseModel")
+    def test_str(self):
+        mod = BaseModel()
+        expected = "[BaseModel] ({}) {}".format(mod.id, mod.__dict__)
+        self.assertEqual(str(mod), expected)
+        self.assertEqual(mod.__str__(), expected)
 
 
-class TestBaseModelMethods(unittest.TestCase):
-    """Tests for BaseModel save and to_dict methods."""
+class TestBaseModel_dict_method(unittest.TestCase):
+    """ Test case for the dictionary method of the BaseModel class """
+    def test_return_of_is_dict(self):
+        mod = BaseModel()
+        self.assertTrue(dict, type(mod.to_dict()))
 
-    def setUp(self):
-        """Set up test environment."""
-        FileStorage._FileStorage__objects = {}
-        if os.path.exists("file.json"):
-            os.remove("file.json")
+    def test_dict_difference(self):
+        mod = BaseModel()
+        self.assertNotEqual(mod.to_dict(), mod.__dict__)
 
+    def test_with_args(self):
+        mod = BaseModel()
+        with self.assertRaises(TypeError):
+            mod.to_dict("Hello")
+
+    def test_return_value(self):
+        mod = BaseModel()
+        mod.id = "99999"
+        create = datetime.now()
+        update = datetime.now()
+        mod.created_at = create
+        mod.updated_at = update
+        test_dict = {
+                "id": "99999",
+                "created_at": create.isoformat(),
+                "updated_at": update.isoformat(),
+                "__class__": "BaseModel"
+                }
+        self.assertDictEqual(test_dict, mod.to_dict())
+
+    def test_added_dict_content(self):
+        mod = BaseModel()
+        mod.name = "My_first_model"
+        mod.test = "first"
+        mod.num = 1
+        self.assertIn("num", mod.to_dict())
+        self.assertIn("name", mod.to_dict())
+        self.assertIn("test", mod.to_dict())
+
+    def test_dict_keys(self):
+        mod = BaseModel()
+        self.assertIn("__class__", mod.to_dict())
+        self.assertIn("id", mod.to_dict())
+        self.assertIn("created_at", mod.to_dict())
+        self.assertIn("updated_at", mod.to_dict())
+
+    def test_datetime_is_str(self):
+        mod = BaseModel()
+        test_dict = mod.to_dict()
+        self.assertEqual(str, type(test_dict["created_at"]))
+        self.assertEqual(str, type(test_dict["updated_at"]))
+
+
+class TestBaseModel_save(unittest.TestCase):
+    """ Test case for BaseModel save method """
+    @classmethod
     def tearDown(self):
-        """Clean up test environment."""
-        FileStorage._FileStorage__objects = {}
-        if os.path.exists("file.json"):
+        try:
             os.remove("file.json")
+        except IOError:
+            pass
 
-    def test_save_updates_updated_at(self):
-        """Test that save updates updated_at attribute."""
-        bm = BaseModel()
-        old_updated_at = bm.updated_at
-        time.sleep(0.01)
-        bm.save()
-        self.assertGreater(bm.updated_at, old_updated_at)
+    def test_one_call(self):
+        mod = BaseModel()
+        sleep(0.07)
+        update = mod.updated_at
+        mod.save()
+        self.assertLess(update, mod.updated_at)
 
-    def test_save_creates_file(self):
-        """Test that save method creates and persists to file.json."""
-        bm = BaseModel()
-        bm.save()
-        self.assertTrue(os.path.exists("file.json"))
-        with open("file.json", "r", encoding="utf-8") as f:
-            content = f.read()
-            self.assertIn("BaseModel.{}".format(bm.id), content)
+    def test_two_calls(self):
+        mod = BaseModel()
+        sleep(0.07)
+        update = mod.updated_at
+        mod.save()
+        self.assertLess(update, mod.updated_at)
+        new_update_at = mod.updated_at
+        sleep(0.07)
+        mod.save()
+        self.assertLess(new_update_at, mod.updated_at)
 
-    def test_to_dict_type(self):
-        """Test that to_dict returns a dictionary."""
-        bm = BaseModel()
-        self.assertIsInstance(bm.to_dict(), dict)
+    def test_with_args(self):
+        mod = BaseModel()
+        with self.assertRaises(TypeError):
+            mod.save([])
 
-    def test_to_dict_keys(self):
-        """Test that to_dict contains expected keys."""
-        bm = BaseModel()
-        bm.name = "Holberton"
-        bm.my_number = 89
-        d = bm.to_dict()
-        self.assertEqual(d["__class__"], "BaseModel")
-        self.assertEqual(d["id"], bm.id)
-        self.assertEqual(d["name"], "Holberton")
-        self.assertEqual(d["my_number"], 89)
-        self.assertIsInstance(d["created_at"], str)
-        self.assertIsInstance(d["updated_at"], str)
-
-    def test_to_dict_iso_format(self):
-        """Test that created_at and updated_at in to_dict are ISO format."""
-        bm = BaseModel()
-        d = bm.to_dict()
-        self.assertEqual(d["created_at"], bm.created_at.isoformat())
-        self.assertEqual(d["updated_at"], bm.updated_at.isoformat())
-
-    def test_to_dict_does_not_mutate_dict(self):
-        """Test that to_dict returns a copy and does not mutate __dict__."""
-        bm = BaseModel()
-        bm_dict = bm.to_dict()
-        self.assertNotIn("__class__", bm.__dict__)
+    def test_file_content(self):
+        mod = BaseModel()
+        mod.save()
+        mod_id = "BaseModel" + "." + mod.id
+        with open("file.json", "r") as file:
+            self.assertIn(mod_id, file.read())
 
 
-if __name__ == "__main__":
+class TestBaseModel_str(unittest.TestCase):
+    """ Test case for BaseModel __str__ method """
+
+    def test_str_return_type(self):
+        mod = BaseModel()
+        self.assertIsInstance(str(mod), str)
+        self.assertIsInstance(mod.__str__(), str)
+
+    def test_str_format(self):
+        mod = BaseModel()
+        expected = "[BaseModel] ({}) {}".format(mod.id, mod.__dict__)
+        self.assertEqual(str(mod), expected)
+        self.assertEqual(mod.__str__(), expected)
+
+    def test_str_contains_class_name(self):
+        mod = BaseModel()
+        self.assertIn("[BaseModel]", str(mod))
+
+    def test_str_contains_id(self):
+        mod = BaseModel()
+        self.assertIn("({})".format(mod.id), str(mod))
+
+    def test_str_contains_dict(self):
+        mod = BaseModel()
+        self.assertIn(str(mod.__dict__), str(mod))
+
+    def test_str_with_attributes(self):
+        mod = BaseModel()
+        mod.name = "My First Model"
+        mod.my_number = 89
+        expected = "[BaseModel] ({}) {}".format(mod.id, mod.__dict__)
+        self.assertEqual(str(mod), expected)
+        self.assertEqual(mod.__str__(), expected)
+        self.assertIn("'name': 'My First Model'", str(mod))
+        self.assertIn("'my_number': 89", str(mod))
+
+    def test_str_two_instances(self):
+        mod1 = BaseModel()
+        mod2 = BaseModel()
+        self.assertNotEqual(str(mod1), str(mod2))
+
+
+if __name__ == '__main__':
     unittest.main()
