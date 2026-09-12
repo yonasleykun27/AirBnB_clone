@@ -1,4 +1,4 @@
-# 0x00. AirBnB Clone - The Console
+# 0x00. AirBnB Clone - The Console 
 
 ## Project Description
 The **AirBnB Clone** is a foundational full-stack software development project designed to replicate the core backend functionalities of the AirBnB web application.
