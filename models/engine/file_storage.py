@@ -5,13 +5,6 @@
 
 import os
 import json
-from models.base_model import BaseModel
-from models.user import User
-from models.state import State
-from models.city import City
-from models.amenity import Amenity
-from models.place import Place
-from models.review import Review
 
 
 class FileStorage:
@@ -26,31 +19,60 @@ class FileStorage:
 
     def all(self):
         """ Returns dictionary containing all object instances id """
-        return self.__objects
+        if not isinstance(FileStorage.__objects, dict):
+            FileStorage.__objects = {}
+        return FileStorage.__objects
 
     def new(self, obj):
         """ sets in __objects the obj with key <obj class name>.id
         Args:
             obj (BaseModel): instance of a class Basemodel
         """
+        if not isinstance(FileStorage.__objects, dict):
+            FileStorage.__objects = {}
         key = obj.__class__.__name__ + "." + obj.id
-        self.__objects[key] = obj
+        FileStorage.__objects[key] = obj
 
     def save(self):
         """ serializes __objects to the JSON file (path: __file_path) """
+        if not isinstance(FileStorage.__objects, dict):
+            FileStorage.__objects = {}
+        odict = FileStorage.__objects
+        objdict = {obj: odict[obj].to_dict() for obj in odict.keys()}
         with open(self.__file_path, 'w', encoding="utf-8") as file:
-            n_dict = self.all()
-            dict_serl = {}
-            for key, value in n_dict.items():
-                dict_serl[key] = value.to_dict()
-            json.dump(dict_serl, file)
+            json.dump(objdict, file)
 
     def reload(self):
         """ deserializes the JSON file to __objects (only if the JSON file
         (__file_path) exists """
-        if os.path.exists(FileStorage.__file_path):
-            with open(self.__file_path, 'r', encoding="utf-8") as fi:
-                objects_dict = json.loads(fi.read())
-                for value in objects_dict.values():
-                    n_object = eval(value["__class__"])(**value)
-                    self.new(n_object)
+        from models.base_model import BaseModel
+        from models.user import User
+        from models.state import State
+        from models.city import City
+        from models.amenity import Amenity
+        from models.place import Place
+        from models.review import Review
+
+        classes = {
+            "BaseModel": BaseModel,
+            "User": User,
+            "State": State,
+            "City": City,
+            "Amenity": Amenity,
+            "Place": Place,
+            "Review": Review
+        }
+
+        if (isinstance(self.__file_path, str) and
+                os.path.exists(self.__file_path)):
+            try:
+                with open(self.__file_path, 'r', encoding="utf-8") as fi:
+                    content = fi.read()
+                    if content:
+                        obj_dict = json.loads(content)
+                        for o in obj_dict.values():
+                            cls_name = o.get("__class__")
+                            if cls_name in classes:
+                                self.new(classes[cls_name](**o))
+            except Exception:
+                pass
