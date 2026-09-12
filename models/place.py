@@ -1,22 +1,23 @@
 #!/usr/bin/python3
-""" Module for the User class of tha Air_bnb project """
+"""Defines the Place class."""
 from models.base_model import BaseModel
 
 
 class Place(BaseModel):
-    """ Place class for the Air_bnb project
+    """Represents a Place.
+
     Attributes:
-        city_id (str): the City id
-        user_id (str): the User id
-        name (str): Location name
-        description (str): Location info
-        number_rooms (int): total number of rooms in the place
-        number_bathrooms (int): total number of bath rooms in the place
-        max_guest (int): maximum guests the place can house
-        price_by_night (int): cost of a night's stay at the place
-        latitude (float): latitude of a place
-        longitude (float): longitude of a place
-        amenity_ids (list): contains the Amenity ids(string)
+        city_id (str): The City id.
+        user_id (str): The User id.
+        name (str): The name of the place.
+        description (str): The description of the place.
+        number_rooms (int): The number of rooms.
+        number_bathrooms (int): The number of bathrooms.
+        max_guest (int): The maximum number of guests.
+        price_by_night (int): The price by night.
+        latitude (float): The latitude of the place.
+        longitude (float): The longitude of the place.
+        amenity_ids (list): A list of Amenity ids.
     """
 
     city_id = ""

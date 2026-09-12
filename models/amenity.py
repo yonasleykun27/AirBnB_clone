@@ -1,12 +1,13 @@
 #!/usr/bin/python3
-""" Module for the Amenity class of tha Air_bnb project """
+"""Defines the Amenity class."""
 from models.base_model import BaseModel
 
 
 class Amenity(BaseModel):
-    """ Amenity class for the Air_bnb project
+    """Represents an Amenity.
+
     Attributes:
-        name (str): name of the state
+        name (str): The name of the amenity.
     """
 
     name = ""

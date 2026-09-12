@@ -1,15 +1,16 @@
 #!/usr/bin/python3
-""" Module for the User class of tha Air_bnb project """
+"""Defines the User class."""
 from models.base_model import BaseModel
 
 
 class User(BaseModel):
-    """ User class for the Air_bnb project
+    """Represents a User.
+
     Attributes:
-        email (str): user's email address
-        password (str): user's password
-        first_name (str): user's firstname
-        last_name (str): user's last_name
+        email (str): The email of the user.
+        password (str): The password of the user.
+        first_name (str): The first name of the user.
+        last_name (str): The last name of the user.
     """
 
     email = ""
