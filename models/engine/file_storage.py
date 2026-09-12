@@ -17,7 +17,7 @@ class FileStorage:
 
     def all(self):
         """Returns the dictionary __objects."""
-        return FileStorage.__objects
+        return self.__objects
 
     def new(self, obj):
         """Sets in __objects the obj with key <obj class name>.id.
@@ -26,14 +26,14 @@ class FileStorage:
             obj: The object to add to __objects.
         """
         key = "{}.{}".format(obj.__class__.__name__, obj.id)
-        FileStorage.__objects[key] = obj
+        self.__objects[key] = obj
 
     def save(self):
         """Serializes __objects to the JSON file (path: __file_path)."""
         obj_dict = {
-            k: v.to_dict() for k, v in FileStorage.__objects.items()
+            k: v.to_dict() for k, v in self.__objects.items()
         }
-        with open(FileStorage.__file_path, "w", encoding="utf-8") as f:
+        with open(self.__file_path, "w", encoding="utf-8") as f:
             json.dump(obj_dict, f)
 
     def reload(self):
@@ -58,14 +58,16 @@ class FileStorage:
             "Place": Place,
             "Review": Review
         }
-        if os.path.isfile(FileStorage.__file_path):
-            with open(FileStorage.__file_path, "r", encoding="utf-8") as f:
+        try:
+            with open(self.__file_path, "r", encoding="utf-8") as f:
                 try:
                     obj_dict = json.load(f)
                     for key, val in obj_dict.items():
                         cls_name = val.get("__class__")
                         if cls_name in classes:
                             cls = classes[cls_name]
-                            FileStorage.__objects[key] = cls(**val)
+                            self.__objects[key] = cls(**val)
                 except Exception:
                     pass
+        except FileNotFoundError:
+            pass
