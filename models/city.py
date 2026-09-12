@@ -1,14 +1,13 @@
 #!/usr/bin/python3
-"""Defines the City class."""
+""" Module for the City class of tha Air_bnb project """
 from models.base_model import BaseModel
 
 
 class City(BaseModel):
-    """Represents a City.
-
+    """ City class for the Air_bnb project
     Attributes:
-        state_id (str): The state id.
-        name (str): The name of the city.
+        state_id(str): states's id
+        name (str): city's firstname
     """
 
     state_id = ""

@@ -1,15 +1,14 @@
 #!/usr/bin/python3
-"""Defines the Review class."""
+""" Module for the Review class of tha Air_bnb project """
 from models.base_model import BaseModel
 
 
 class Review(BaseModel):
-    """Represents a Review.
-
+    """ Review class for the Air_bnb project
     Attributes:
-        place_id (str): The Place id.
-        user_id (str): The User id.
-        text (str): The review text.
+        place_id (str): place being reviewed
+        user_id (str): id of user making the reviewed
+        text (str): review content
     """
 
     place_id = ""

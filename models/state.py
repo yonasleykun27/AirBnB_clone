@@ -1,13 +1,12 @@
 #!/usr/bin/python3
-"""Defines the State class."""
+""" Module for the State class of tha Air_bnb project """
 from models.base_model import BaseModel
 
 
 class State(BaseModel):
-    """Represents a State.
-
+    """ State class for the Air_bnb project
     Attributes:
-        name (str): The name of the state.
+        name (str): name of the state
     """
 
     name = ""
