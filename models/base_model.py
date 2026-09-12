@@ -17,6 +17,9 @@ class BaseModel:
             *args: Unused positional arguments.
             **kwargs: Key/value pairs of attributes.
         """
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
         if kwargs and len(kwargs) != 0:
             for key, val in kwargs.items():
                 if key == "__class__":
@@ -34,9 +37,6 @@ class BaseModel:
                 else:
                     self.__dict__[key] = val
         else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
             models.storage.new(self)
 
     def save(self):
