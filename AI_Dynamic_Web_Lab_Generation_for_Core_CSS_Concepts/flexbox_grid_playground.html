@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Flexbox & Grid Interactive Playground</title>
+  <style>
+    :root {
+      --bg-color: #0b1329;
+      --card-bg: #1e293b;
+      --card-inner: #0f172a;
+      --text-color: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: var(--text-color);
+      margin-bottom: 4px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+      flex: 1;
+    }
+
+    /* Controls Panel */
+    .panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .panel h2 {
+      font-size: 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      color: var(--accent);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-group label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    select {
+      background-color: var(--card-inner);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    select:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .badge-info {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    /* Playground Stage */
+    .stage-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow: hidden;
+    }
+
+    .viewport {
+      background: #020617;
+      border: 2px dashed #334155;
+      border-radius: 8px;
+      min-height: 420px;
+      padding: 16px;
+      position: relative;
+      overflow: auto;
+    }
+
+    /* Container element */
+    #container {
+      background-color: rgba(30, 41, 59, 0.7);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      min-height: 380px;
+      padding: 16px;
+      gap: 12px;
+      transition: all 0.15s ease;
+    }
+
+    /* Item divs */
+    .item {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: #ffffff;
+      border: 2px solid #60a5fa;
+      border-radius: 6px;
+      padding: 20px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      min-width: 80px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .item:nth-child(1) { background: linear-gradient(135deg, #ef4444, #b91c1c); border-color: #f87171; }
+    .item:nth-child(2) { background: linear-gradient(135deg, #f59e0b, #b45309); border-color: #fbbf24; }
+    .item:nth-child(3) { background: linear-gradient(135deg, #10b981, #047857); border-color: #34d399; }
+    .item:nth-child(4) { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border-color: #a78bfa; }
+    .item:nth-child(5) { background: linear-gradient(135deg, #06b6d4, #0e7490); border-color: #22d3ee; }
+
+    /* Code preview */
+    .code-preview {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: 'Fira Code', Consolas, monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CSS Flexbox & Grid Interactive Playground</h1>
+    <p>Experiment with container layout models and dynamic alignment rules in real-time.</p>
+  </header>
+
+  <div class="main-layout">
+    <!-- Controls -->
+    <aside class="panel">
+      <h2>Container Layout Controls</h2>
+
+      <!-- Display -->
+      <div class="control-group">
+        <label for="displaySelect">display</label>
+        <select id="displaySelect">
+          <option value="flex" selected>flex</option>
+          <option value="grid">grid</option>
+          <option value="block">block</option>
+        </select>
+      </div>
+
+      <!-- Flex Direction -->
+      <div class="control-group">
+        <label for="flexDirectionSelect">flex-direction</label>
+        <select id="flexDirectionSelect">
+          <option value="row" selected>row</option>
+          <option value="column">column</option>
+          <option value="row-reverse">row-reverse</option>
+          <option value="column-reverse">column-reverse</option>
+        </select>
+        <span class="badge-info" id="flexDirNote">Applicable in flex mode</span>
+      </div>
+
+      <!-- Justify Content -->
+      <div class="control-group">
+        <label for="justifyContentSelect">justify-content</label>
+        <select id="justifyContentSelect">
+          <option value="flex-start" selected>flex-start</option>
+          <option value="center">center</option>
+          <option value="flex-end">flex-end</option>
+          <option value="space-between">space-between</option>
+          <option value="space-around">space-around</option>
+          <option value="space-evenly">space-evenly</option>
+        </select>
+      </div>
+
+      <!-- Align Items -->
+      <div class="control-group">
+        <label for="alignItemsSelect">align-items</label>
+        <select id="alignItemsSelect">
+          <option value="stretch" selected>stretch</option>
+          <option value="flex-start">flex-start</option>
+          <option value="center">center</option>
+          <option value="flex-end">flex-end</option>
+          <option value="baseline">baseline</option>
+        </select>
+      </div>
+
+      <!-- Grid Template Columns -->
+      <div class="control-group">
+        <label for="gridTemplateSelect">grid-template-columns</label>
+        <select id="gridTemplateSelect">
+          <option value="1fr 1fr">1fr 1fr (2 equal columns)</option>
+          <option value="1fr 1fr 1fr" selected>1fr 1fr 1fr (3 equal columns)</option>
+          <option value="repeat(4, 1fr)">repeat(4, 1fr) (4 columns)</option>
+          <option value="200px 1fr 1fr">200px 1fr 1fr (fixed sidebar)</option>
+          <option value="repeat(auto-fit, minmax(120px, 1fr))">auto-fit minmax(120px, 1fr)</option>
+        </select>
+        <span class="badge-info" id="gridNote">Applicable in grid mode</span>
+      </div>
+    </aside>
+
+    <!-- Stage Area -->
+    <main class="stage-card">
+      <div class="viewport">
+        <div id="container">
+          <div class="item">Item 1</div>
+          <div class="item">Item 2</div>
+          <div class="item">Item 3</div>
+          <div class="item">Item 4</div>
+          <div class="item">Item 5</div>
+        </div>
+      </div>
+
+      <div class="code-preview" id="codeOutput">/* Computed Container CSS */</div>
+    </main>
+  </div>
+
+  <script>
+    const container = document.getElementById('container');
+    const displaySelect = document.getElementById('displaySelect');
+    const flexDirectionSelect = document.getElementById('flexDirectionSelect');
+    const justifyContentSelect = document.getElementById('justifyContentSelect');
+    const alignItemsSelect = document.getElementById('alignItemsSelect');
+    const gridTemplateSelect = document.getElementById('gridTemplateSelect');
+    const codeOutput = document.getElementById('codeOutput');
+
+    function updateLayout() {
+      const disp = displaySelect.value;
+      const fDir = flexDirectionSelect.value;
+      const jContent = justifyContentSelect.value;
+      const aItems = alignItemsSelect.value;
+      const gCols = gridTemplateSelect.value;
+
+      // Enable/disable conditional controls
+      const isFlex = disp === 'flex';
+      const isGrid = disp === 'grid';
+
+      flexDirectionSelect.disabled = !isFlex;
+      gridTemplateSelect.disabled = !isGrid;
+
+      // Apply CSS properties to container
+      container.style.display = disp;
+
+      if (isFlex) {
+        container.style.flexDirection = fDir;
+        container.style.justifyContent = jContent;
+        container.style.alignItems = aItems;
+        container.style.gridTemplateColumns = '';
+      } else if (isGrid) {
+        container.style.flexDirection = '';
+        container.style.justifyContent = jContent;
+        container.style.alignItems = aItems;
+        container.style.gridTemplateColumns = gCols;
+      } else { // block
+        container.style.flexDirection = '';
+        container.style.justifyContent = '';
+        container.style.alignItems = '';
+        container.style.gridTemplateColumns = '';
+      }
+
+      // Generate live CSS preview
+      let cssRules = `#container {\n  display: ${disp};\n  gap: 12px;\n`;
+      if (isFlex) {
+        cssRules += `  flex-direction: ${fDir};\n  justify-content: ${jContent};\n  align-items: ${aItems};\n`;
+      } else if (isGrid) {
+        cssRules += `  grid-template-columns: ${gCols};\n  justify-content: ${jContent};\n  align-items: ${aItems};\n`;
+      } else {
+        cssRules += `  /* In block mode, child items stack naturally by document flow */\n`;
+      }
+      cssRules += `}`;
+
+      codeOutput.textContent = cssRules;
+    }
+
+    [displaySelect, flexDirectionSelect, justifyContentSelect, alignItemsSelect, gridTemplateSelect].forEach(select => {
+      select.addEventListener('change', updateLayout);
+    });
+
+    updateLayout();
+  </script>
+</body>
+</html>
